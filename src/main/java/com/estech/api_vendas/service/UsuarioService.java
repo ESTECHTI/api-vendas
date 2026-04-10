@@ -1,10 +1,11 @@
 package com.estech.api_vendas.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.estech.api_vendas.dto.UsuarioDTO;
+import com.estech.api_vendas.dto.UsuarioResponseDTO;
 import com.estech.api_vendas.entity.Usuario;
 import com.estech.api_vendas.exception.ResourceNotFoundException;
 import com.estech.api_vendas.repository.UsuarioRepository;
@@ -25,8 +26,22 @@ public class UsuarioService {
     return repository.save(usuario);
   }
 
-  public List<Usuario> listar() {
-    return repository.findAll();
+  public Page<UsuarioResponseDTO> listar(String nome, String email, Pageable pageable) {
+
+    Page<Usuario> page;
+
+    if (nome != null) {
+      page = repository.findByNomeContainingIgnoreCase(nome, pageable);
+    } else if (email != null) {
+      page = repository.findByEmailContainingIgnoreCase(email, pageable);
+    } else {
+      page = repository.findAll(pageable);
+    }
+
+    return page.map(usuario -> new UsuarioResponseDTO(
+        usuario.getId(),
+        usuario.getNome(),
+        usuario.getEmail()));
   }
 
   public Usuario buscarPorId(Long id) {
