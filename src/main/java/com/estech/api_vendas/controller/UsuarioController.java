@@ -31,7 +31,7 @@ public class UsuarioController {
   }
 
   @PostMapping
-  public Usuario criar(@Valid @RequestBody UsuarioDTO dto) {
+  public UsuarioResponseDTO criar(@Valid @RequestBody UsuarioDTO dto) {
     return service.criar(dto);
   }
 
