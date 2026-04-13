@@ -8,22 +8,22 @@ import com.estech.api_vendas.dto.UsuarioDTO;
 import com.estech.api_vendas.dto.UsuarioResponseDTO;
 import com.estech.api_vendas.entity.Usuario;
 import com.estech.api_vendas.exception.ResourceNotFoundException;
+import com.estech.api_vendas.mapper.UsuarioMapper;
 import com.estech.api_vendas.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
   private final UsuarioRepository repository;
+  private final UsuarioMapper mapper;
 
-  public UsuarioService(UsuarioRepository repository) {
+  public UsuarioService(UsuarioRepository repository, UsuarioMapper mapper) {
     this.repository = repository;
+    this.mapper = mapper;
   }
 
-  public Usuario criar(UsuarioDTO dto) {
-    Usuario usuario = new Usuario();
-    usuario.setNome(dto.getNome());
-    usuario.setEmail(dto.getEmail());
-
-    return repository.save(usuario);
+  public UsuarioResponseDTO criar(UsuarioDTO dto) {
+    Usuario usuario = mapper.toEntity(dto);
+    return mapper.toResponse(repository.save(usuario));
   }
 
   public Page<UsuarioResponseDTO> listar(String nome, String email, Pageable pageable) {
@@ -38,10 +38,7 @@ public class UsuarioService {
       page = repository.findAll(pageable);
     }
 
-    return page.map(usuario -> new UsuarioResponseDTO(
-        usuario.getId(),
-        usuario.getNome(),
-        usuario.getEmail()));
+    return page.map(mapper::toResponse);
   }
 
   public Usuario buscarPorId(Long id) {
