@@ -16,12 +16,8 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/h2-console/**").permitAll()
-            .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults());
-
-    // H2 console needs same-origin frames in local profile.
-    http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+            .requestMatchers("/auth/**").permitAll()
+            .anyRequest().authenticated());
 
     return http.build();
   }
